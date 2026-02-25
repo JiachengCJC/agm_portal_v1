@@ -44,7 +44,7 @@ This is a **Minimum Viable Product** for a centralized **AI Project Management &
 
 ### Run
 ```bash
-docker compose up --build
+!!!Important!!! follow insturctions under manualRun.md
 ```
 
 ### Open

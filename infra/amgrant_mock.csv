@@ -1,0 +1,4 @@
+title,institution,domain,ai_type,maturity_stage,status,risk_level,compliance_status,funding_amount_sgd
+CT Coronary Stenosis Detector,SingHealth,Radiology,Computer Vision,Validation,Active,High,In Progress,250000
+Ward Readmission Risk Model,SingHealth,Operations,Tabular ML,Production,Active,Medium,Approved,180000
+Clinical Note Summarizer,SingHealth,General Medicine,NLP,Development,On Hold,High,Needs Review,90000

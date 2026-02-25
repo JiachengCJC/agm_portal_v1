@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: agm
+    ports:
+      - "5432:5432"
+    volumes:
+      - agm_db_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    environment:
+      ENV: dev
+      SECRET_KEY: dev-secret-change-me
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/agm
+      BACKEND_CORS_ORIGINS: http://localhost:5173,http://localhost:3000
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  agm_db_data:

@@ -16,7 +16,7 @@ from app.schemas.project import (
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
-
+# write a entry into the AuditLog table every time a project is touched.
 def _log(db: Session, actor_user_id: int, action: str, entity_type: str, entity_id: int, diff: dict | None = None):
     db.add(
         AuditLog(
@@ -28,7 +28,8 @@ def _log(db: Session, actor_user_id: int, action: str, entity_type: str, entity_
         )
     )
 
-
+# response_model=list[ProjectOut]: Tells FastAPI to format the returned 
+# list of database objects using the ProjectOut schema.
 @router.get("", response_model=list[ProjectOut])
 def list_projects(
     db: Session = Depends(get_db),
@@ -61,9 +62,10 @@ def list_projects(
 
     return query.order_by(Project.updated_at.desc()).all()
 
-
+# payload: ProjectCreate: Expects a JSON body matching the ProjectCreate schema.
 @router.post("", response_model=ProjectOut)
 def create_project(payload: ProjectCreate, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    # Converts the Pydantic payload into a dictionary, unpacks it (**), and injects the logged-in user's ID as the owner_id.
     project = Project(**payload.model_dump(), owner_id=user.id)
     db.add(project)
     db.commit()
@@ -73,7 +75,7 @@ def create_project(payload: ProjectCreate, db: Session = Depends(get_db), user=D
     db.commit()
     return project
 
-
+# Fetches a single project by the ID in the URL.
 @router.get("/{project_id}", response_model=ProjectOut)
 def get_project(project_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)):
     project = db.query(Project).filter(Project.id == project_id).first()
@@ -83,7 +85,7 @@ def get_project(project_id: int, db: Session = Depends(get_db), user=Depends(get
         raise HTTPException(status_code=403, detail="Not allowed")
     return project
 
-
+# PATCH means a partial update (as opposed to PUT, which replaces the whole object).
 @router.patch("/{project_id}", response_model=ProjectOut)
 def update_project(
     project_id: int,
@@ -97,6 +99,8 @@ def update_project(
     if user.role == "researcher" and project.owner_id != user.id:
         raise HTTPException(status_code=403, detail="Not allowed")
 
+    # It tells Pydantic to only extract fields the user actually sent in the JSON. 
+    # If they didn't send a title, it won't overwrite the existing title with None
     data = payload.model_dump(exclude_unset=True)
     for k, v in data.items():
         setattr(project, k, v)

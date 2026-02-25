@@ -27,7 +27,8 @@ class ProjectBase(BaseModel):
 class ProjectCreate(ProjectBase):
     pass
 
-
+# this schema overrides the strict required fields from ProjectBase and makes them optional (str | None = None). 
+# This allows the user to send just a new title without having to resend the domain.
 class ProjectUpdate(ProjectBase):
     # allow partial updates
     title: str | None = None
@@ -37,6 +38,7 @@ class ProjectUpdate(ProjectBase):
 
 
 class ProjectOut(ProjectBase):
+    # adds fields that the database generates automatically (like the ID and timestamps).
     id: int
     owner_id: int
     created_at: datetime

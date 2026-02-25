@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth'
+import AssistantChat from './AssistantChat'
 
 export default function Layout() {
   const auth = useAuth()
@@ -35,8 +36,13 @@ export default function Layout() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-6">
-        <Outlet />
+      <main className="mx-auto max-w-6xl px-4 py-6 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-6">
+        <section className="min-w-0">
+          <Outlet />
+        </section>
+        <div className="mt-6 lg:mt-0">
+          <AssistantChat />
+        </div>
       </main>
 
       <footer className="mx-auto max-w-6xl px-4 py-8 text-xs text-gray-500">

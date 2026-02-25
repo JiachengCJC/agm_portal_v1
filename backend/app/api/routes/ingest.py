@@ -37,6 +37,9 @@ async def ingest_amgrant_csv(
     for row in reader:
         title = (row.get("title") or "").strip()
         institution = (row.get("institution") or "").strip()
+
+        # If the row is missing a title or institution (maybe 
+        # it's a blank row at the end of the file), it skips it and moves to the next one.
         if not title or not institution:
             continue
 
@@ -47,6 +50,9 @@ async def ingest_amgrant_csv(
             .first()
         )
 
+        # The or "Default Value" logic ensures that if the CSV leaves a cell blank, 
+        # your database won't complain about missing data; 
+        # it will just slot in a safe default (like "General" or "Medium").
         fields = {
             "domain": (row.get("domain") or "General").strip(),
             "ai_type": (row.get("ai_type") or "Unknown").strip(),
@@ -63,6 +69,7 @@ async def ingest_amgrant_csv(
             except ValueError:
                 pass
 
+        # If the database lookup earlier found nothing, we create a new Project
         if project is None:
             # For MVP: ingested projects owned by management user to keep simple.
             project = Project(title=title, institution=institution, owner_id=user.id, **fields)
@@ -74,7 +81,7 @@ async def ingest_amgrant_csv(
                     action="INGEST",
                     entity_type="Project",
                     entity_id=project.id,
-                    diff_json=AuditLog.dumps({"source": "AMGrant CSV", "row": row}),
+                    diff_json=AuditLog.dumps({"source": file.filename, "row": row}),
                 )
             )
             created += 1
@@ -87,7 +94,7 @@ async def ingest_amgrant_csv(
                     action="INGEST",
                     entity_type="Project",
                     entity_id=project.id,
-                    diff_json=AuditLog.dumps({"source": "AMGrant CSV", "row": row}),
+                    diff_json=AuditLog.dumps({"source": file.filename, "row": row}),
                 )
             )
             updated += 1

@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     # Security
     SECRET_KEY: str = "change-me" # used to sign login tokens.
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1  # 1 day
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60*24  # 1 day
     ALGORITHM: str = "HS256"
 
     # CORS, Guest List of allowed websites in production.

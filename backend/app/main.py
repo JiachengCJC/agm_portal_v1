@@ -9,6 +9,7 @@ from app.db.session import SessionLocal
 from app.models.user import User
 from app.api.routes import auth, projects, analytics, ingest, assistant
 
+#123
 # If the table is empty, it automatically creates two "Demo" users: a Management user and a Researcher user.
 def _seed_users() -> None:
     """Seed demo users if DB is empty (MVP only)."""

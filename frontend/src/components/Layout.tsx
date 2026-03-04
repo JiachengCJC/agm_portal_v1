@@ -19,6 +19,11 @@ export default function Layout() {
             <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'font-semibold' : 'text-gray-600'}>
               Dashboard
             </NavLink>
+            {auth.role === 'admin' || auth.role === 'management' ? (
+              <NavLink to="/users" className={({ isActive }) => isActive ? 'font-semibold' : 'text-gray-600'}>
+                Users
+              </NavLink>
+            ) : null}
             <NavLink to="/import" className={({ isActive }) => isActive ? 'font-semibold' : 'text-gray-600'}>
               Import
             </NavLink>

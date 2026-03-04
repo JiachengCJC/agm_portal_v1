@@ -4,6 +4,7 @@ import { Card } from '../components/Card'
 import {
   Bar,
   BarChart,
+  Cell,
   Legend,
   Pie,
   PieChart,
@@ -12,6 +13,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+
+const PIE_COLORS = ['#2563eb', '#f59e0b', '#16a34a', '#dc2626', '#7c3aed', '#0891b2', '#ea580c', '#65a30d']
 
 type CountByKey = { key: string; count: number }
 type FundingByKey = {
@@ -81,7 +84,11 @@ export default function Dashboard() {
               <div className="mt-3 h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={domainData} dataKey="count" nameKey="key" label />
+                    <Pie data={domainData} dataKey="count" nameKey="key" label>
+                      {domainData.map((entry, index) => (
+                        <Cell key={`domain-cell-${entry.key}-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                      ))}
+                    </Pie>
                     <Tooltip />
                     <Legend />
                   </PieChart>

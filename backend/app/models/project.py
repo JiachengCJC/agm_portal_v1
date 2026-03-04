@@ -26,12 +26,6 @@ class Project(Base):
     maturity_stage: Mapped[str] = mapped_column(String(64), nullable=False, default="Discovery")
     status: Mapped[str] = mapped_column(String(64), nullable=False, default="Active")
 
-    # Legacy compatibility columns kept in DB for existing deployments.
-    # They are intentionally hidden from API schemas/UI.
-    risk_level: Mapped[str] = mapped_column(String(32), nullable=False, default="Medium")
-    compliance_status: Mapped[str] = mapped_column(String(64), nullable=False, default="Not Started")
-    approvals: Mapped[str | None] = mapped_column(String(255), nullable=True)
-
     data_sensitivity: Mapped[str] = mapped_column(String(64), nullable=False, default="De-identified")
 
     # Funding / timeline

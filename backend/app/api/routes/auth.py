@@ -2,16 +2,20 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db
+from app.api.deps import get_db, require_role
 from app.core.security import hash_password, verify_password, create_access_token
 from app.models.user import User
 from app.schemas.auth import UserCreate, UserOut, Token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-# No register page in frontend now, so this route is not used unless you call API manually
+
 @router.post("/register", response_model=UserOut)
-def register(payload: UserCreate, db: Session = Depends(get_db)):
+def register(
+    payload: UserCreate,
+    db: Session = Depends(get_db),
+    _user=Depends(require_role("admin", "management")),
+):
     existing = db.query(User).filter(User.email == payload.email).first()
     # if the email already exists
     if existing:
@@ -27,6 +31,14 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
     return user
+
+
+@router.get("/users", response_model=list[UserOut])
+def list_users(
+    db: Session = Depends(get_db),
+    _user=Depends(require_role("admin", "management")),
+):
+    return db.query(User).order_by(User.created_at.desc()).all()
 
 # You won’t type form fields manually; frontend handles it for you.
 # But this endpoint is still called during login.

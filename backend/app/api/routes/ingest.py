@@ -1,6 +1,6 @@
 import csv
 import io
-from datetime import datetime
+from datetime import date
 
 from fastapi import APIRouter, Depends, File, UploadFile, HTTPException
 from sqlalchemy.orm import Session
@@ -21,7 +21,7 @@ async def ingest_amgrant_csv(
     """Read-only integration MVP.
 
     Expected columns (mocked):
-    - title,institution,domain,ai_type,maturity_stage,status,risk_level,compliance_status,funding_amount_sgd
+    - title,institution,domain,ai_type,maturity_stage,status,funding_amount_sgd
 
     For conflicts: we create a new Project if exact title+institution does not exist; otherwise update fields.
     """
@@ -58,8 +58,6 @@ async def ingest_amgrant_csv(
             "ai_type": (row.get("ai_type") or "Unknown").strip(),
             "maturity_stage": (row.get("maturity_stage") or "Discovery").strip(),
             "status": (row.get("status") or "Active").strip(),
-            "risk_level": (row.get("risk_level") or "Medium").strip(),
-            "compliance_status": (row.get("compliance_status") or "Not Started").strip(),
         }
 
         funding_raw = (row.get("funding_amount_sgd") or "").strip()
@@ -72,7 +70,13 @@ async def ingest_amgrant_csv(
         # If the database lookup earlier found nothing, we create a new Project
         if project is None:
             # For MVP: ingested projects owned by management user to keep simple.
-            project = Project(title=title, institution=institution, owner_id=user.id, **fields)
+            project = Project(
+                title=title,
+                institution=institution,
+                owner_id=user.id,
+                start_date=date.today(),
+                **fields,
+            )
             db.add(project)
             db.flush()
             db.add(

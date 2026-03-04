@@ -29,18 +29,18 @@ def _build_portfolio_context(db: Session, user: User) -> dict[str, Any]:
     total = len(projects)
     active = sum(1 for p in projects if (p.status or "").lower() == "active")
 
-    by_risk = Counter((p.risk_level or "Unknown") for p in projects)
+    by_domain = Counter((p.domain or "Unknown") for p in projects)
     by_stage = Counter((p.maturity_stage or "Unknown") for p in projects)
-    by_compliance = Counter((p.compliance_status or "Unknown") for p in projects)
+    total_spent = sum(float(p.funding_amount_sgd or 0) for p in projects)
 
     latest_titles = [p.title for p in projects[:5]]
 
     return {
         "total": total,
         "active": active,
-        "risk": _format_counter(by_risk),
+        "domain": _format_counter(by_domain),
         "stage": _format_counter(by_stage),
-        "compliance": _format_counter(by_compliance),
+        "total_spent": total_spent,
         "latest_titles": latest_titles,
     }
 
@@ -49,21 +49,21 @@ def _fallback_reply(message: str, context: dict[str, Any]) -> str:
     lower = message.lower()
     total = context["total"]
     active = context["active"]
-    risk = context["risk"]
+    domain = context["domain"]
     stage = context["stage"]
-    compliance = context["compliance"]
+    total_spent = context["total_spent"]
     latest_titles = context["latest_titles"]
 
-    if any(k in lower for k in ("risk", "risky", "high risk")):
+    if any(k in lower for k in ("domain", "specialty", "type")):
         return (
-            f"Risk overview: {risk}. "
-            "If you want, I can suggest which projects should be reviewed first."
+            f"Domain distribution: {domain}. "
+            "If you want, I can suggest where to rebalance resources."
         )
 
-    if any(k in lower for k in ("compliance", "approval", "approved")):
+    if any(k in lower for k in ("fund", "funding", "spend", "budget")):
         return (
-            f"Compliance overview: {compliance}. "
-            "Projects marked 'Not Started' or 'Needs Review' should be prioritized."
+            f"Current total spent amount is SGD {total_spent:,.2f}. "
+            "I can break this down by domain or project."
         )
 
     if any(k in lower for k in ("stage", "maturity", "progress")):
@@ -75,12 +75,12 @@ def _fallback_reply(message: str, context: dict[str, Any]) -> str:
     if any(k in lower for k in ("summary", "overview", "portfolio", "status")):
         return (
             f"You have {total} total projects, with {active} currently active. "
-            f"Risk levels: {risk}. Compliance: {compliance}."
+            f"Domain distribution: {domain}. Total spent: SGD {total_spent:,.2f}."
         )
 
     latest = ", ".join(latest_titles) if latest_titles else "no recent projects yet"
     return (
-        f"I can help with portfolio insights, risk, compliance, and project planning. "
+        f"I can help with portfolio insights, domain mix, funding usage, and project planning. "
         f"Current snapshot: {total} projects ({active} active). "
         f"Recent projects: {latest}."
     )
@@ -94,7 +94,8 @@ async def _call_openai(message: str, history: list[dict[str, str]], context: dic
         "You are an AI assistant for an AI project management portal.\n"
         "Be concise and practical.\n"
         f"Portfolio context: total={context['total']}, active={context['active']}, "
-        f"risk=({context['risk']}), maturity=({context['stage']}), compliance=({context['compliance']})."
+        f"domain=({context['domain']}), maturity=({context['stage']}), "
+        f"total_spent_sgd={context['total_spent']:.2f}."
     )
 
     messages = [{"role": "system", "content": system_prompt}]

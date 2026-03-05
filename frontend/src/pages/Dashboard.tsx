@@ -4,6 +4,7 @@ import { Card } from '../components/Card'
 import {
   Bar,
   BarChart,
+  CartesianGrid,
   Cell,
   Legend,
   Pie,
@@ -101,11 +102,16 @@ export default function Dashboard() {
               <div className="mt-3 h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={fundingByDomain}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="key" />
                     <YAxis allowDecimals={false} />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="amount_sgd" name="Spent (SGD)" />
+                    <Bar dataKey="amount_sgd" name="Spent (SGD)" radius={[8, 8, 0, 0]}>
+                      {fundingByDomain.map((entry, index) => (
+                        <Cell key={`funding-cell-${entry.key}-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                      ))}
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>

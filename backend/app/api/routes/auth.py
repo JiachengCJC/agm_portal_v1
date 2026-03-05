@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, require_role
 from app.core.security import hash_password, verify_password, create_access_token
+from app.models.audit import AuditLog
 from app.models.user import User
 from app.schemas.auth import UserCreate, UserOut, Token
 
@@ -30,6 +31,17 @@ def register(
     db.add(user)
     db.commit()
     db.refresh(user)
+
+    db.add(
+        AuditLog(
+            actor_user_id=_user.id,
+            action="CREATE_USER",
+            entity_type="User",
+            entity_id=user.id,
+            diff_json=AuditLog.dumps({"email": user.email, "role": user.role}),
+        )
+    )
+    db.commit()
     return user
 
 
@@ -49,7 +61,29 @@ def list_users(
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
+        if user:
+            db.add(
+                AuditLog(
+                    actor_user_id=user.id,
+                    action="LOGIN_FAILED",
+                    entity_type="User",
+                    entity_id=user.id,
+                    diff_json=AuditLog.dumps({"email": user.email}),
+                )
+            )
+            db.commit()
         raise HTTPException(status_code=401, detail="Incorrect email or password")
+
+    db.add(
+        AuditLog(
+            actor_user_id=user.id,
+            action="LOGIN",
+            entity_type="User",
+            entity_id=user.id,
+            diff_json=AuditLog.dumps({"email": user.email}),
+        )
+    )
+    db.commit()
 
     token = create_access_token(subject=user.email, role=user.role)
     return Token(access_token=token)

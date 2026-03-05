@@ -26,8 +26,23 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres@db:5432/agm"
 
     # Optional LLM integration
+    # 1 = OpenAI API, 2 = Ollama, 3 = local OpenAI-compatible server
+    LLM_MODE: int = 3
+    LLM_TIMEOUT_SECONDS: float = 30.0
+
+    # Mode 1: OpenAI, insert your own API key here("sk-....")
     OPENAI_API_KEY: str | None = None
     OPENAI_MODEL: str = "gpt-4o-mini"
+
+    # Mode 2: Ollama
+    OLLAMA_BASE_URL: str = "http://host.docker.internal:11434"
+    OLLAMA_MODEL: str = "phi3:mini"
+
+    # Mode 3: local model server (OpenAI-compatible endpoint)
+    # Example servers: llama.cpp server, LM Studio, vLLM.
+    LOCAL_LLM_BASE_URL: str = "http://host.docker.internal:1234/v1"
+    LOCAL_LLM_MODEL: str = "phi-3-mini-128k-instruct-imatrix-smashed"
+    LOCAL_LLM_API_KEY: str | None = None
 
 
 settings = Settings()

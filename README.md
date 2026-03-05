@@ -1,111 +1,202 @@
-# AGM Portal MVP (DSA3101 Project-10 style)
+# AGM Portal MVP
 
-This is a **Minimum Viable Product** for a centralized **AI Project Management & Analytics Portal** aligned with the SingHealth AI Office problem statement:
-- standardised project data capture
-- basic governance fields (risk/compliance)
-- portfolio-level analytics dashboard
-- **read-only** ingestion of mocked AMGrant exports (CSV)
+AGM Portal is a Dockerized AI project management portal.
+It combines project tracking, governance metadata, analytics, CSV ingestion, and an LLM chat assistant.
 
-## What you get (MVP scope)
+## What This Project Does
 
-### 1) Project Registry
-- Create / edit projects with key metadata
-- Researcher view: only their own projects
-- Management view: all projects
+- Centralized AI project registry
+- Governance capture (maturity, data sensitivity, status)
+- Portfolio analytics dashboard
+- AMGrant-style CSV ingest (create/update project records)
+- LLM assistant with 3 provider methods:
+  - Method 1: OpenAI API
+  - Method 2: Ollama
+  - Method 3: Local model server (LM Studio/OpenAI-compatible)
 
-### 2) Governance Guardrails (lightweight)
-- Required: institution, domain, AI type, maturity stage, risk, compliance status
-- Audit log entries created for create/update/delete/ingest
+## Stack
 
-### 3) Portfolio Intelligence Dashboard (management/admin only)
-- Total & active projects
-- Maturity pipeline (bar chart)
-- Risk distribution (pie chart)
+- Frontend: React + TypeScript + Vite + Tailwind
+- Backend: FastAPI + SQLAlchemy
+- Database: PostgreSQL
+- Orchestration: Docker Compose
 
-### 4) Mock AMGrant Integration (read-only)
-- Upload a CSV export and the backend will **create or update** projects by `(title, institution)`
-- Endpoint: `POST /api/v1/integrations/amgrant/ingest`
+## Prerequisites
 
----
+- Docker Desktop
+- Optional, depending on LLM method:
+  - OpenAI API key (Method 1)
+  - Ollama installed (Method 2)
+  - LM Studio installed (Method 3)
 
-## Tech stack
+## Quick Start
 
-- **Frontend**: React + TypeScript + Vite + Tailwind + Recharts
-- **Backend**: FastAPI + SQLAlchemy + Postgres
-- **Auth**: JWT (email+password)
-- **Infra**: Docker + docker-compose
+Run from project root:
 
----
-
-## Quickstart (local)
-
-### Prereqs
-- Docker Desktop (or Docker Engine)
-
-### Run
 ```bash
-!!!Important!!! follow insturctions under manualRun.md
+docker compose up -d db
+docker compose up -d backend frontend
+docker compose ps
 ```
 
-### Open
-- Frontend: http://localhost:5173
-- Backend Swagger docs: http://localhost:8000/docs
+Open:
 
-### Demo users (seeded on first startup)
-- `management@example.com` / `password` (can access Dashboard + Import)
+- Frontend: [http://localhost:5173](http://localhost:5173)
+- Backend API docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+- Health endpoint: [http://localhost:8000/health](http://localhost:8000/health)
+
+Demo users (seeded only when DB is empty):
+
+- `management@example.com` / `password`
 - `researcher@example.com` / `password`
 
-### Try AMGrant ingestion
-Upload `infra/amgrant_mock.csv` on the **Import** page.
+## Daily Operations
 
----
+### Stop everything
 
-## Data model (MVP)
+```bash
+docker compose down
+```
 
-### users
-- `email`, `role` (`researcher|management|admin`), `hashed_password`
+This stops/removes containers but keeps database data.
 
-### projects
-- metadata: `title`, `institution`, `domain`, `ai_type`
-- lifecycle: `maturity_stage`, `status`
-- governance: `risk_level`, `compliance_status`, `approvals`, `data_sensitivity`
-- funding: `funding_amount_sgd`, `start_date`, `end_date`
+### Run again (keep existing data)
 
-### project_updates
-- lightweight status notes (for periodic updates)
+```bash
+docker compose up -d db backend frontend
+```
 
-### audit_logs
-- tracks create/update/delete/ingest actions
+### Restart app services only
 
----
+```bash
+docker compose restart backend frontend
+```
 
-## Cloud deployment (suggested path)
+### Rebuild app images (keep database data)
 
-There are many valid ways to deploy. Here’s a clean “course-friendly” approach:
+Use this after backend/frontend code changes:
 
-### Option A: Render (backend + Postgres) + Vercel (frontend)
-1. Create a managed Postgres DB on Render.
-2. Deploy `backend/` as a Docker Web Service.
-   - Set env vars:
-     - `DATABASE_URL` (Render connection string; keep SQLAlchemy prefix)
-     - `SECRET_KEY` (strong random)
-     - `ENV=prod`
-     - `BACKEND_CORS_ORIGINS=https://<your-frontend-domain>`
-3. Deploy `frontend/` on Vercel as a static site.
-   - Set env var at build time:
-     - `VITE_API_URL=https://<your-backend-domain>/api/v1`
+```bash
+docker compose up -d --build backend frontend
+```
 
-### Option B: Single-host deployment (any VM)
-- Run the same `docker-compose.yml` on a VM (DigitalOcean/Linode/AWS Lightsail)
-- Put Nginx in front for TLS (Let’s Encrypt)
+### Full clean reset (delete all DB data and rebuild)
 
----
+Warning: this removes PostgreSQL data volume.
 
-## Next steps (after MVP)
+```bash
+docker compose down -v --remove-orphans
+docker compose up -d --build db backend frontend
+docker compose ps
+```
 
-- RBAC refinement (separate institutions, project-level permissions)
-- Better governance gating rules (required fields by stage)
-- Discrepancy detection between AMGrant vs Portal fields (flag for review)
-- Richer analytics (bottleneck analysis, time-in-stage, funding breakdown)
-- Optional: RAG-style “AI Copilot” grounded in project data (local or private deployment)
+Optional Docker cache/image cleanup:
 
+```bash
+docker image prune -f
+docker builder prune -f
+```
+
+## LLM Assistant Method Switching
+
+You can control method from:
+
+1. Frontend mode value (`CHAT_MODE`)
+2. Backend environment defaults (`config.py`)
+
+Current chatbox sends `CHAT_MODE` to backend, so that is the direct switch.
+
+### Step 1: Set chatbox mode
+
+Edit `frontend/src/components/AssistantChat.tsx`:
+
+```ts
+const CHAT_MODE = 3
+```
+
+Mode mapping:
+
+- `1` = OpenAI API
+- `2` = Ollama
+- `3` = Local OpenAI-compatible server
+
+### Step 2: Configure backend `backend/app/core/config.py`
+
+Update `backend/app/core/config.py` :
+
+```bash
+# General
+LLM_MODE=3
+
+# Method 1: OpenAI
+OPENAI_API_KEY= "sk-..."
+OPENAI_MODEL=gpt-4o-mini
+
+# Method 2: Ollama
+OLLAMA_BASE_URL=http://host.docker.internal:11434
+OLLAMA_MODEL=phi3:mini
+
+# Method 3: Local server (LM Studio)
+LOCAL_LLM_BASE_URL=http://host.docker.internal:1234/v1
+LOCAL_LLM_MODEL=phi-3-mini-128k-instruct-imatrix-smashed
+LOCAL_LLM_API_KEY=
+```
+
+## Method-by-Method Setup
+
+### Method 1: OpenAI API
+
+1. Set `CHAT_MODE = 1` and `LLM_MODE = 1`
+2. Set `OPENAI_API_KEY` in `backend/app/core/config.py`
+3. Set `OPENAI_MODEL` in `backend/app/core/config.py`
+4. Rebuild/restart backend/frontend
+
+### Method 2: Ollama
+
+1. Install Ollama: [https://ollama.com/download](https://ollama.com/download)
+2. Pull model in terminal:
+  ```bash
+   ollama pull phi3:mini
+  ```
+3. Verify model exists:
+  ```bash
+   ollama list
+  ```
+4. Set `CHAT_MODE = 2` and `LLM_MODE = 2`
+5. Set `backend/app/core/config.py` values:
+  - `OLLAMA_BASE_URL=http://host.docker.internal:11434`
+  - `OLLAMA_MODEL=phi3:mini`
+6. Rebuild/restart backend/frontend
+
+### Method 3: Local model server (LM Studio)
+
+1. Install LM Studio: [https://lmstudio.ai/](https://lmstudio.ai/)
+2. Download your model in **LM Studio** (for example phi-3-mini-128k-instruct-imatrix-smashed)
+3. **Go to the Local Server tab**: In the LM Studio sidebar, select the **Developer/Local Server** tab
+4. **Load your model**: In the "Load Model" dropdown menu, select the model you just downloaded.
+5. Click the **Start Server** button (or toggle the status switch **from "Stopped" to "Running"**)
+6. Set `CHAT_MODE = 3` and `LLM_MODE = 3`
+7. Set `backend/app/core/config.py` values:
+  - `LOCAL_LLM_BASE_URL=http://host.docker.internal:1234/v1`
+  - `LOCAL_LLM_MODEL=<your loaded model identifier>`
+8. Rebuild/restart backend/frontend
+
+
+
+Apply changes:
+
+```bash
+docker compose up -d --build backend frontend
+```
+
+## Fallback Behavior
+
+If the selected LLM provider is unavailable or fails, backend automatically returns fallback responses.
+
+## AMGrant CSV Ingestion
+
+Use sample file:
+
+- `infra/amgrant_mock.csv`
+
+Upload from Import page, it creates/updates projects which inside the csv

@@ -1,11 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.security import hash_password
 from app.db.init_db import init_db
 from app.db.session import SessionLocal
+from app.models.audit import AuditLog
 from app.models.user import User
 from app.api.routes import auth, projects, analytics, ingest, assistant
 #12
@@ -59,6 +61,59 @@ app.add_middleware(
     allow_methods=["*"], # This defines what actions the guest can take. Using ["*"] means: "I allow all types of actions."
     allow_headers=["*"], # what extra info can be sent in the request "envelope". ["*"] means: "I accept all types of headers."
 )
+
+
+@app.middleware("http")
+async def audit_request_middleware(request: Request, call_next):
+    # Record every authenticated API action as a durable audit trail.
+    actor_user_id: int | None = None
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1].strip()
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+            email = payload.get("sub")
+            if email:
+                db = SessionLocal()
+                try:
+                    user = db.query(User).filter(User.email == email).first()
+                    if user:
+                        actor_user_id = user.id
+                finally:
+                    db.close()
+        except JWTError:
+            pass
+
+    status_code = 500
+    response = None
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+    finally:
+        if actor_user_id is not None:
+            db = SessionLocal()
+            try:
+                db.add(
+                    AuditLog(
+                        actor_user_id=actor_user_id,
+                        action="API_CALL",
+                        entity_type="API",
+                        entity_id=0,
+                        diff_json=AuditLog.dumps(
+                            {
+                                "method": request.method,
+                                "path": request.url.path,
+                                "query": request.url.query,
+                                "status_code": status_code,
+                            }
+                        ),
+                    )
+                )
+                db.commit()
+            finally:
+                db.close()
+
+    return response
 
 # Your app is split into different files (Auth, Projects, Analytics). 
 # These lines act like extension cords, plugging those specific features into the main app.

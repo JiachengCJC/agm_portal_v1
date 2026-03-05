@@ -200,3 +200,5 @@ Use sample file:
 - `infra/amgrant_mock.csv`
 
 Upload from Import page, it creates/updates projects which inside the csv
+
+Avoid using LLM Chatbox if you have loaded `amgrant_mock_50rows.csv` as it may run out of context length very easily

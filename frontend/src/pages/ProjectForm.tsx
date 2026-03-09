@@ -9,9 +9,6 @@ type ProjectPayload = {
   ai_type: string
   maturity_stage: string
   status: string
-  risk_level: string
-  compliance_status: string
-  approvals?: string | null
   data_sensitivity: string
   funding_amount_sgd?: number | null
   description?: string | null
@@ -24,9 +21,6 @@ const defaultPayload: ProjectPayload = {
   ai_type: 'Computer Vision',
   maturity_stage: 'Discovery',
   status: 'Active',
-  risk_level: 'Medium',
-  compliance_status: 'Not Started',
-  approvals: null,
   data_sensitivity: 'De-identified',
   funding_amount_sgd: null,
   description: ''
@@ -60,9 +54,6 @@ export default function ProjectForm() {
         ai_type: p.ai_type,
         maturity_stage: p.maturity_stage,
         status: p.status,
-        risk_level: p.risk_level,
-        compliance_status: p.compliance_status,
-        approvals: p.approvals,
         data_sensitivity: p.data_sensitivity,
         funding_amount_sgd: p.funding_amount_sgd ? Number(p.funding_amount_sgd) : null,
         description: p.description
@@ -101,25 +92,12 @@ export default function ProjectForm() {
             {['Active', 'On Hold', 'Completed', 'Cancelled'].map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </Field>
-        <Field label="Risk level">
-          <select className="w-full rounded-lg border px-3 py-2" value={payload.risk_level} onChange={(e) => setPayload({ ...payload, risk_level: e.target.value })}>
-            {['Low', 'Medium', 'High'].map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </Field>
-        <Field label="Compliance status">
-          <select className="w-full rounded-lg border px-3 py-2" value={payload.compliance_status} onChange={(e) => setPayload({ ...payload, compliance_status: e.target.value })}>
-            {['Not Started', 'In Progress', 'Approved', 'Needs Review'].map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </Field>
-        <Field label="Approvals (comma-separated)">
-          <input className="w-full rounded-lg border px-3 py-2" value={payload.approvals || ''} onChange={(e) => setPayload({ ...payload, approvals: e.target.value || null })} />
-        </Field>
         <Field label="Data sensitivity">
           <select className="w-full rounded-lg border px-3 py-2" value={payload.data_sensitivity} onChange={(e) => setPayload({ ...payload, data_sensitivity: e.target.value })}>
             {['De-identified', 'Identifiable', 'Synthetic', 'Unknown'].map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </Field>
-        <Field label="Funding (SGD)">
+        <Field label="Current spent amount (SGD)">
           <input
             className="w-full rounded-lg border px-3 py-2"
             value={payload.funding_amount_sgd ?? ''}

@@ -1,6 +1,6 @@
 import json
 
-from sqlalchemy import String, Integer, DateTime, ForeignKey, Text, func
+from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -23,7 +23,7 @@ class AuditLog(Base):
 
     @staticmethod
     def dumps(obj) -> str:
-        return json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
+        return json.dumps(obj, ensure_ascii=False, separators=(",", ":"), default=str)
 
 
 class ProjectUpdate(Base):
@@ -39,3 +39,17 @@ class ProjectUpdate(Base):
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     project = relationship("Project", back_populates="updates")
+
+
+class ProjectFundingEvent(Base):
+    __tablename__ = "project_funding_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), nullable=False)
+    author_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+
+    amount_sgd: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    project = relationship("Project", back_populates="funding_events")

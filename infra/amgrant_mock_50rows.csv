@@ -1,0 +1,51 @@
+title,institution,domain,ai_type,maturity_stage,status,risk_level,compliance_status,funding_amount_sgd
+CT Coronary Stenosis Detector,SingHealth,Radiology,Computer Vision,Validation,Active,High,In Progress,250000
+Ward Readmission Risk Model,SingHealth,Operations,Tabular ML,Production,Active,Medium,Approved,180000
+Clinical Note Summarizer,SingHealth,General Medicine,NLP,Development,On Hold,High,Needs Review,90000
+Coronary Stenosis Segmentation Model (MRI),Changi General Hospital,Pathology,Computer Vision,Pilot,On Hold,High,Not Started,147000
+MRI Pneumonia Summarizer,NUS Medicine,Dermatology,Computer Vision,Pilot,Completed,Medium,Needs Review,314000
+CT-based Diabetic Retinopathy Monitor,KK Women's and Children's Hospital,General Medicine,NLP,Development,Completed,Low,Not Started,131000
+ECG Stroke Alerting System,Singapore General Hospital,Surgery,Computer Vision,Validation,Completed,Medium,Approved,116000
+MRI-based Stroke Summarizer,KK Women's and Children's Hospital,Cardiology,Graph ML,Development,Active,Medium,In Progress,72000
+EHR Pneumonia Segmentation Model,Institute of Mental Health,Operations,Graph ML,Development,Completed,Low,Not Started,115000
+Medication Error Detector (Ultrasound),KK Women's and Children's Hospital,Radiology,Generative AI,Development,Active,High,In Progress,89000
+No-show Alerting System (Pathology Slide),Singapore General Hospital,General Medicine,NLP,Development,On Hold,Medium,In Progress,97000
+ICU Deterioration Classifier,Changi General Hospital,Cardiology,Graph ML,Ideation,Active,Medium,Needs Review,79000
+No-show Optimizer,Institute of Mental Health,Dermatology,Generative AI,Production,Completed,Low,Approved,389000
+ECG-based Medication Error Risk Model,Khoo Teck Puat Hospital,Surgery,NLP,Validation,Retired,High,In Progress,244000
+Readmission Segmentation Model (CXR),SingHealth,Oncology,Tabular ML,Pilot,On Hold,High,Approved,303000
+Pathology Slide-based Coronary Stenosis Risk Model,Tan Tock Seng Hospital,ICU,Tabular ML,Development,Active,Medium,Not Started,142000
+ICU Deterioration Triage Assistant,Khoo Teck Puat Hospital,Dermatology,Computer Vision,Development,Completed,Medium,Not Started,136000
+Ultrasound-based Kidney Injury Monitor,Khoo Teck Puat Hospital,Neurology,Reinforcement Learning,Validation,Active,Low,Not Started,110000
+Ultrasound Coronary Stenosis Risk Model,Institute of Mental Health,Pathology,Computer Vision,Production,Completed,Low,In Progress,277000
+ICU Deterioration Optimizer,Changi General Hospital,Pathology,Generative AI,Pilot,Active,Low,Needs Review,197000
+Readmission Detector,National Healthcare Group (NHG),Public Health,Time Series,Pilot,Active,Low,Approved,199000
+ECG Cancer Recurrence Summarizer,SingHealth,Neurology,Graph ML,Production,On Hold,Low,Approved,412000
+Diabetic Retinopathy Monitor,Changi General Hospital,Neurology,NLP,Production,Retired,Medium,Not Started,239000
+Kidney Injury Monitor,KK Women's and Children's Hospital,Oncology,NLP,Development,Retired,High,In Progress,69000
+Mental Health Relapse Classifier (Pathology Slide),Changi General Hospital,Radiology,Computer Vision,Production,Active,Low,Approved,174000
+Ultrasound Stroke Optimizer,KK Women's and Children's Hospital,Surgery,Generative AI,Validation,On Hold,High,In Progress,143000
+ICU Deterioration Segmentation Model,National University Health System (NUHS),Emergency Medicine,Graph ML,Production,Active,Medium,Approved,179000
+Mental Health Relapse Segmentation Model (Ultrasound),NUS Medicine,Emergency Medicine,Computer Vision,Production,Active,Low,Approved,312000
+CXR-based Coronary Stenosis Classifier,Khoo Teck Puat Hospital,Pharmacy,Tabular ML,Production,Active,Low,In Progress,184000
+Pneumonia Recommender (ECG),SingHealth,Pharmacy,Graph ML,Production,On Hold,Medium,Approved,185000
+Lab Lung Nodule Detector,Changi General Hospital,Emergency Medicine,Graph ML,Ideation,Retired,Low,In Progress,69000
+MRI Sepsis Triage Assistant,SingHealth,Emergency Medicine,Reinforcement Learning,Validation,Active,Low,In Progress,212000
+Ultrasound-based Breast Lesion Risk Model,A*STAR,ICU,Reinforcement Learning,Production,Active,Medium,In Progress,426000
+Length of Stay Detector (X-ray),A*STAR,Public Health,Time Series,Pilot,Active,Medium,Approved,184000
+No-show Detector,A*STAR,Pathology,Computer Vision,Pilot,Active,Medium,Approved,174000
+Ultrasound-based No-show Recommender,Khoo Teck Puat Hospital,Cardiology,Graph ML,Development,On Hold,Medium,Approved,90000
+Readmission Segmentation Model (CT),Changi General Hospital,Operations,Time Series,Ideation,On Hold,Medium,Needs Review,80000
+Readmission Monitor (CXR),Institute of Mental Health,General Medicine,Computer Vision,Pilot,Active,High,Approved,192000
+Lab-based Sepsis Recommender,Changi General Hospital,Pharmacy,Tabular ML,Pilot,Active,Medium,Needs Review,287000
+ICU Deterioration Summarizer,Khoo Teck Puat Hospital,Pharmacy,Time Series,Pilot,Retired,Medium,Needs Review,320000
+Kidney Injury Summarizer,Khoo Teck Puat Hospital,ICU,Reinforcement Learning,Validation,Active,Medium,Needs Review,163000
+X-ray-based Sepsis Segmentation Model,National Healthcare Group (NHG),Cardiology,Graph ML,Production,Active,Medium,Approved,164000
+Ultrasound Falls Risk Optimizer,Changi General Hospital,Neurology,Time Series,Production,On Hold,Medium,Needs Review,232000
+Readmission Monitor (CT),National University Health System (NUHS),Oncology,Graph ML,Production,On Hold,Low,In Progress,269000
+Pathology Slide-based Mental Health Relapse Classifier,Khoo Teck Puat Hospital,ICU,Time Series,Validation,Completed,Medium,Approved,159000
+X-ray-based Falls Risk Alerting System,A*STAR,ICU,NLP,Production,Active,High,Needs Review,278000
+MRI-based Kidney Injury Summarizer,National Healthcare Group (NHG),Emergency Medicine,Tabular ML,Production,Active,Low,Needs Review,339000
+MRI-based Length of Stay Monitor,Singapore General Hospital,Dermatology,Generative AI,Development,Active,Medium,Approved,156000
+CT No-show Alerting System,Khoo Teck Puat Hospital,Emergency Medicine,Tabular ML,Pilot,Completed,High,Needs Review,359000
+Ultrasound-based Falls Risk Summarizer,National Healthcare Group (NHG),Surgery,Time Series,Ideation,Active,Medium,In Progress,97000

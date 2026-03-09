@@ -9,6 +9,10 @@ type Message = {
   content: string
 }
 
+// Switch provider in code:
+// 1 = OpenAI, 2 = Ollama, 3 = local model server
+const CHAT_MODE = 3
+
 function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 }
@@ -49,7 +53,8 @@ export default function AssistantChat() {
     try {
       const res = await api.post('/assistant/chat', {
         message: text,
-        history: historyForApi.slice(-12)
+        history: historyForApi.slice(-12),
+        mode: CHAT_MODE
       })
 
       const reply = typeof res.data?.reply === 'string' && res.data.reply.trim()

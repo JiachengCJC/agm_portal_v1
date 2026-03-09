@@ -10,8 +10,7 @@ type Project = {
   ai_type: string
   maturity_stage: string
   status: string
-  risk_level: string
-  compliance_status: string
+  funding_amount_sgd?: number | null
   updated_at: string
 }
 
@@ -58,9 +57,9 @@ export default function Projects() {
             <tr>
               <th className="px-4 py-3">Title</th>
               <th className="px-4 py-3">Institution</th>
-              <th className="px-4 py-3">Stage</th>
-              <th className="px-4 py-3">Risk</th>
-              <th className="px-4 py-3">Compliance</th>
+              <th className="px-4 py-3">Domain</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Spent (SGD)</th>
               <th className="px-4 py-3">Updated</th>
             </tr>
           </thead>
@@ -88,9 +87,9 @@ export default function Projects() {
                   <div className="text-xs text-gray-500">{p.domain} • {p.ai_type}</div>
                 </td>
                 <td className="px-4 py-3">{p.institution}</td>
-                <td className="px-4 py-3">{p.maturity_stage}</td>
-                <td className="px-4 py-3">{p.risk_level}</td>
-                <td className="px-4 py-3">{p.compliance_status}</td>
+                <td className="px-4 py-3">{p.domain}</td>
+                <td className="px-4 py-3">{p.status}</td>
+                <td className="px-4 py-3">{Number(p.funding_amount_sgd || 0).toLocaleString()}</td>
                 <td className="px-4 py-3 text-xs text-gray-500">{new Date(p.updated_at).toLocaleString()}</td>
               </tr>
             ))}

@@ -26,10 +26,6 @@ class Project(Base):
     maturity_stage: Mapped[str] = mapped_column(String(64), nullable=False, default="Discovery")
     status: Mapped[str] = mapped_column(String(64), nullable=False, default="Active")
 
-    # Governance
-    risk_level: Mapped[str] = mapped_column(String(32), nullable=False, default="Medium")
-    compliance_status: Mapped[str] = mapped_column(String(64), nullable=False, default="Not Started")
-    approvals: Mapped[str | None] = mapped_column(String(255), nullable=True)  # comma-separated for MVP
     data_sensitivity: Mapped[str] = mapped_column(String(64), nullable=False, default="De-identified")
 
     # Funding / timeline
@@ -46,3 +42,4 @@ class Project(Base):
     updated_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     updates = relationship("ProjectUpdate", back_populates="project", cascade="all, delete-orphan")
+    funding_events = relationship("ProjectFundingEvent", back_populates="project", cascade="all, delete-orphan")

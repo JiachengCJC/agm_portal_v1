@@ -12,9 +12,6 @@ class ProjectBase(BaseModel):
     maturity_stage: str = "Discovery"
     status: str = "Active"
 
-    risk_level: str = "Medium"
-    compliance_status: str = "Not Started"
-    approvals: str | None = None
     data_sensitivity: str = "De-identified"
 
     funding_amount_sgd: Decimal | None = Field(default=None, ge=0)
@@ -50,10 +47,28 @@ class ProjectUpdateCreate(BaseModel):
     note: str
 
 
+class ProjectEndRequest(BaseModel):
+    note: str | None = None
+
+
+class ProjectFundingEventCreate(BaseModel):
+    amount_sgd: Decimal = Field(gt=0)
+    note: str | None = None
+
+
 class ProjectUpdateOut(BaseModel):
     id: int
     project_id: int
     author_user_id: int
     status: str
     note: str
+    created_at: datetime
+
+
+class ProjectFundingEventOut(BaseModel):
+    id: int
+    project_id: int
+    author_user_id: int
+    amount_sgd: Decimal
+    note: str | None
     created_at: datetime

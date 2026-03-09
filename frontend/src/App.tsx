@@ -9,6 +9,7 @@ import Projects from './pages/Projects'
 import ProjectDetail from './pages/ProjectDetail'
 import ProjectForm from './pages/ProjectForm'
 import ImportPage from './pages/Import'
+import UserManagement from './pages/UserManagement'
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const auth = useAuth()
@@ -31,6 +32,7 @@ export default function App() {
       >
         <Route index element={<Navigate to="/projects" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="users" element={<UserManagement />} />
         <Route path="import" element={<ImportPage />} />
         <Route path="projects" element={<Projects />} />
         <Route path="projects/new" element={<ProjectForm />} />

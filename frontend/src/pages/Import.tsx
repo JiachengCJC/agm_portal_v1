@@ -39,7 +39,7 @@ export default function ImportPage() {
         {msg ? <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-700">{msg}</div> : null}
 
         <div className="text-xs text-gray-600">
-          Expected columns: <code>title,institution,domain,ai_type,maturity_stage,status,risk_level,compliance_status,funding_amount_sgd</code>
+          Expected columns: <code>title,institution,domain,ai_type,maturity_stage,status,funding_amount_sgd</code>
         </div>
       </div>
 
